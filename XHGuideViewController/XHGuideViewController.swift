@@ -24,11 +24,11 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     let pageControlHeight: CGFloat = 30
     let pageControlY: CGFloat = UIScreen.mainScreen().bounds.height - 100
     
-    var viewControllers: [UIViewController] = []
-    var autoClose: Bool = true
-    var showSkipButton: Bool = true
-    var showTime: Int = 5
-    var actionSkip: (()->())! = {}
+    public var viewControllers: [UIViewController] = []
+    public var autoClose: Bool = true
+    public var showSkipButton: Bool = true
+    public var showTime: Int = 5
+    public var actionSkip: (()->())! = {}
     
     // MARK:lazy load
     
@@ -43,7 +43,7 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     }()
     
     // pageControl
-    private lazy var pageControl: UIPageControl = {
+    public lazy var pageControl: UIPageControl = {
         var newValue: UIPageControl = UIPageControl(frame: CGRectMake((self.screenWidth - self.pageControlWidth)/2, self.pageControlY, self.pageControlWidth, self.pageControlHeight))
         newValue.hidesForSinglePage = true
         newValue.addTarget(self, action: #selector(pageControlValueChanged(_:)), forControlEvents: .ValueChanged)
@@ -51,7 +51,7 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     }()
     
     // timeToCloseLabel
-    private lazy var timeToCloseLabel: UILabel = {
+    public lazy var timeToCloseLabel: UILabel = {
         var newValue: UILabel = UILabel(frame: CGRectMake(self.screenWidth - self.timeLabelWidth - self.skipButtonWidth - 20, self.timeLabelY, self.timeLabelWidth, self.timeLabelHeight))
         newValue.font = UIFont.systemFontOfSize(12)
         newValue.textColor = UIColor.darkGrayColor()
@@ -59,7 +59,7 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     }()
     
     // skipButton
-    private lazy var skipButton: UIButton = {
+    public lazy var skipButton: UIButton = {
         var newValue: UIButton = UIButton(frame: CGRectMake(self.timeToCloseLabel.frame.maxX, self.timeToCloseLabel.frame.minY, self.skipButtonWidth, self.skipButtonHeight))
         newValue.setTitle("跳过", forState: .Normal)
         newValue.setTitleColor(UIColor.darkGrayColor(), forState: .Normal)
@@ -72,7 +72,7 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     }()
     
     // backgroundImage
-    var backgroundImageView: UIImageView = UIImageView()
+    public var backgroundImageView: UIImageView = UIImageView()
     
     
     // MARK: Initialize

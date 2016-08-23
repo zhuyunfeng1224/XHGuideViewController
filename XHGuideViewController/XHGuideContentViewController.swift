@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-enum XHGuideImageType: Int {
+public enum XHGuideImageType: Int {
     case System = 0     // 应用内图片
     case Document = 1   // 沙盒Document下图片
     case Url = 2        // 网络图片
@@ -31,12 +31,12 @@ public class XHGuideContentViewController: UIViewController {
     private var buttonTitle: String?
     private var imageType: XHGuideImageType = .System
     
-    var index: Int = 0
-    var buttonAction: (()->())?
-    var tapAtIndex: ((index: Int)->())?
+    public var index: Int = 0
+    public var buttonAction: (()->())?
+    public var tapAtIndex: ((index: Int)->())?
     
     // imageView
-    lazy var imageView: UIImageView = {
+    public lazy var imageView: UIImageView = {
         let newValue: UIImageView = UIImageView(frame: CGRectMake(self.leftMargin, self.topMargin, self.screenWidth, self.screenHeight))
         newValue.backgroundColor = UIColor.clearColor()
         newValue.contentMode = .ScaleAspectFill
@@ -44,7 +44,7 @@ public class XHGuideContentViewController: UIViewController {
         return newValue
     }()
     // actionButton
-    lazy var actionButton: UIButton = {
+    public lazy var actionButton: UIButton = {
         var newValue: UIButton = UIButton(frame: CGRectMake((self.screenWidth - self.buttonWidth)/2, self.screenHeight - 100 - self.buttonHeight, self.buttonWidth, self.buttonHeight))
         newValue.setTitle("开始", forState: .Normal)
         newValue.setTitleColor(UIColor.darkGrayColor(), forState: .Normal)
@@ -56,7 +56,7 @@ public class XHGuideContentViewController: UIViewController {
         return newValue
     }()
     
-    convenience init(imageNameOrUrl:String?, imageType:XHGuideImageType, buttonTitle: String?) {
+    public convenience init(imageNameOrUrl:String?, imageType:XHGuideImageType, buttonTitle: String?) {
         self.init()
         self.imageNameOrUrl = imageNameOrUrl
         self.buttonTitle = buttonTitle
