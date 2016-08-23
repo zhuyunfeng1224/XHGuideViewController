@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name             = "XHGuideViewController"
-s.version          = "0.0.1"
+s.version          = "0.0.2"
 s.summary          = "A guide controller used on iOS."
 s.description      = <<-DESC
 It is a segment controller, which implement by swift.
