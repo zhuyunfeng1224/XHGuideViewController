@@ -9,10 +9,10 @@
 import Foundation
 import UIKit
 
-public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
+open class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     
-    let screenWidth = UIScreen.mainScreen().bounds.width
-    let screenHeight = UIScreen.mainScreen().bounds.height
+    let screenWidth = UIScreen.main.bounds.width
+    let screenHeight = UIScreen.main.bounds.height
     let timeLabelWidth: CGFloat = 30.0
     let timeLabelHeight: CGFloat = 20.0
     let timeLabelY: CGFloat = 20.0
@@ -22,87 +22,87 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     
     let pageControlWidth: CGFloat = 100
     let pageControlHeight: CGFloat = 30
-    let pageControlY: CGFloat = UIScreen.mainScreen().bounds.height - 100
+    let pageControlY: CGFloat = UIScreen.main.bounds.height - 100
     
-    public var viewControllers: [UIViewController] = []
-    public var autoClose: Bool = true
-    public var showSkipButton: Bool = true
-    public var showTime: Int = 5
-    public var actionSkip: (()->())! = {}
+    open var viewControllers: [UIViewController] = []
+    open var autoClose: Bool = true
+    open var showSkipButton: Bool = true
+    open var showTime: Int = 5
+    open var actionSkip: (()->())! = {}
     
     // MARK:lazy load
     
     // scrollView
-    private lazy var scrollView: UIScrollView = {
+    fileprivate lazy var scrollView: UIScrollView = {
         var newValue: UIScrollView = UIScrollView(frame: self.view.bounds)
-        newValue.pagingEnabled = true
-        newValue.backgroundColor = UIColor.clearColor()
+        newValue.isPagingEnabled = true
+        newValue.backgroundColor = UIColor.clear
         newValue.alwaysBounceHorizontal = true
         newValue.delegate = self
         return newValue
     }()
     
     // pageControl
-    public lazy var pageControl: UIPageControl = {
-        var newValue: UIPageControl = UIPageControl(frame: CGRectMake((self.screenWidth - self.pageControlWidth)/2, self.pageControlY, self.pageControlWidth, self.pageControlHeight))
+    open lazy var pageControl: UIPageControl = {
+        var newValue: UIPageControl = UIPageControl(frame: CGRect(x: (self.screenWidth - self.pageControlWidth)/2, y: self.pageControlY, width: self.pageControlWidth, height: self.pageControlHeight))
         newValue.hidesForSinglePage = true
-        newValue.addTarget(self, action: #selector(pageControlValueChanged(_:)), forControlEvents: .ValueChanged)
+        newValue.addTarget(self, action: #selector(pageControlValueChanged(_:)), for: .valueChanged)
         return newValue
     }()
     
     // timeToCloseLabel
-    public lazy var timeToCloseLabel: UILabel = {
-        var newValue: UILabel = UILabel(frame: CGRectMake(self.screenWidth - self.timeLabelWidth - self.skipButtonWidth - 20, self.timeLabelY, self.timeLabelWidth, self.timeLabelHeight))
-        newValue.font = UIFont.systemFontOfSize(12)
-        newValue.textColor = UIColor.darkGrayColor()
+    open lazy var timeToCloseLabel: UILabel = {
+        var newValue: UILabel = UILabel(frame: CGRect(x: self.screenWidth - self.timeLabelWidth - self.skipButtonWidth - 20, y: self.timeLabelY, width: self.timeLabelWidth, height: self.timeLabelHeight))
+        newValue.font = UIFont.systemFont(ofSize: 12)
+        newValue.textColor = UIColor.darkGray
         return newValue
     }()
     
     // skipButton
-    public lazy var skipButton: UIButton = {
-        var newValue: UIButton = UIButton(frame: CGRectMake(self.timeToCloseLabel.frame.maxX, self.timeToCloseLabel.frame.minY, self.skipButtonWidth, self.skipButtonHeight))
-        newValue.setTitle("跳过", forState: .Normal)
-        newValue.setTitleColor(UIColor.darkGrayColor(), forState: .Normal)
-        newValue.titleLabel?.font = UIFont.systemFontOfSize(12)
-        newValue.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
+    open lazy var skipButton: UIButton = {
+        var newValue: UIButton = UIButton(frame: CGRect(x: self.timeToCloseLabel.frame.maxX, y: self.timeToCloseLabel.frame.minY, width: self.skipButtonWidth, height: self.skipButtonHeight))
+        newValue.setTitle("跳过", for: UIControlState())
+        newValue.setTitleColor(UIColor.darkGray, for: UIControlState())
+        newValue.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        newValue.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         newValue.layer.cornerRadius = 5
         newValue.layer.masksToBounds = true
-        newValue .addTarget(self, action: #selector(skipButtonClicked(_:)), forControlEvents: .TouchUpInside)
+        newValue .addTarget(self, action: #selector(skipButtonClicked(_:)), for: .touchUpInside)
         return newValue
     }()
     
     // backgroundImage
-    public var backgroundImageView: UIImageView = UIImageView()
+    open var backgroundImageView: UIImageView = UIImageView()
     
     
     // MARK: Initialize
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
         self.loadSubViews()
-        self.timeToCloseLabel.hidden = !self.autoClose
+        self.timeToCloseLabel.isHidden = !self.autoClose
     }
     
-    override public func viewDidAppear(animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         if self.autoClose == true {
             
-            let timer: NSTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(XHGuideViewController.delayTimeChanged), userInfo: nil, repeats: true)
+            let timer: Timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(XHGuideViewController.delayTimeChanged), userInfo: nil, repeats: true)
             timer.fire()
         }
     }
     
-    private func loadSubViews() {
+    fileprivate func loadSubViews() {
         self.backgroundImageView.frame = self.view.bounds
         self.view.addSubview(self.backgroundImageView)
         
-        self.scrollView.contentSize = CGSizeMake(scrollView.frame.width * CGFloat(self.viewControllers.count), scrollView.frame.height)
+        self.scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(self.viewControllers.count), height: scrollView.frame.height)
         for i in 0 ..< self.viewControllers.count {
             let vc: XHGuideContentViewController = self.viewControllers[i] as! XHGuideContentViewController
             vc.index = i
             let view = vc.view
-            view.frame = CGRectMake(CGFloat(i) * scrollView.frame.width, 0, scrollView.frame.width, scrollView.frame.height)
-            self.scrollView.addSubview(view)
+            view?.frame = CGRect(x: CGFloat(i) * scrollView.frame.width, y: 0, width: scrollView.frame.width, height: scrollView.frame.height)
+            self.scrollView.addSubview(view!)
         }
         self.view.addSubview(self.scrollView)
         
@@ -118,7 +118,7 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: UIScrollViewDelegate
     
-    public func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    open func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         let offsetX: CGFloat = scrollView.contentOffset.x
         
         if (self.scrollView.contentSize.width - offsetX) < CGFloat(self.scrollView.frame.width - 60) {
@@ -126,23 +126,23 @@ public class XHGuideViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let page: NSInteger = Int(scrollView.contentOffset.x/scrollView.frame.width)
         self.pageControl.currentPage = page
     }
     
     // MARK: Actions
     
-    @objc private func pageControlValueChanged(sender: UIPageControl) {
+    @objc fileprivate func pageControlValueChanged(_ sender: UIPageControl) {
         let page = sender.currentPage
-        self.scrollView.contentOffset = CGPointMake(CGFloat(page) * self.scrollView.frame.width, self.scrollView.contentOffset.y)
+        self.scrollView.contentOffset = CGPoint(x: CGFloat(page) * self.scrollView.frame.width, y: self.scrollView.contentOffset.y)
     }
     
-    @objc private func skipButtonClicked(sender: UIButton) {
+    @objc fileprivate func skipButtonClicked(_ sender: UIButton) {
         self.actionSkip()
     }
     
-    @objc private func delayTimeChanged(timer: NSTimer) {
+    @objc fileprivate func delayTimeChanged(_ timer: Timer) {
         self.timeToCloseLabel.text = "\(self.showTime<0 ? 0: self.showTime)s"
         if self.showTime <= 0 {
             timer.invalidate()

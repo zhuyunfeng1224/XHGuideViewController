@@ -3,7 +3,7 @@ s.name             = "XHGuideViewController"
 s.version          = "0.0.3"
 s.summary          = "A guide controller used on iOS."
 s.description      = <<-DESC
-It is a segment controller, which implement by swift.
+It is a guide controller, which implement by swift.
 DESC
 s.homepage         = "https://github.com/zhuyunfeng1224/XHGuideViewController"
 # s.screenshots      = "www.example.com/screenshots_1", "www.example.com/screenshots_2"

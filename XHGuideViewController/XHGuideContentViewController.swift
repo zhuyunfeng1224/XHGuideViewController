@@ -10,49 +10,49 @@ import Foundation
 import UIKit
 
 public enum XHGuideImageType: Int {
-    case System = 0     // 应用内图片
-    case Document = 1   // 沙盒Document下图片
-    case Url = 2        // 网络图片
+    case system = 0     // 应用内图片
+    case document = 1   // 沙盒Document下图片
+    case url = 2        // 网络图片
 }
 
-public class XHGuideContentViewController: UIViewController {
-    private let screenWidth = UIScreen.mainScreen().bounds.width
-    private let screenHeight = UIScreen.mainScreen().bounds.height
-    private let leftMargin: CGFloat = 0.0
-    private let rightMargin: CGFloat = 0.0
-    private let topMargin: CGFloat = 0.0
-    private let bottomMargin: CGFloat = 0.0
+open class XHGuideContentViewController: UIViewController {
+    fileprivate let screenWidth = UIScreen.main.bounds.width
+    fileprivate let screenHeight = UIScreen.main.bounds.height
+    fileprivate let leftMargin: CGFloat = 0.0
+    fileprivate let rightMargin: CGFloat = 0.0
+    fileprivate let topMargin: CGFloat = 0.0
+    fileprivate let bottomMargin: CGFloat = 0.0
     
-    private let buttonWidth: CGFloat = 100.0
-    private let buttonHeight: CGFloat = 40.0
-    private let buttonBottomPadding: CGFloat = 100.0
+    fileprivate let buttonWidth: CGFloat = 100.0
+    fileprivate let buttonHeight: CGFloat = 40.0
+    fileprivate let buttonBottomPadding: CGFloat = 100.0
     
-    private var imageNameOrUrl: String?
-    private var buttonTitle: String?
-    private var imageType: XHGuideImageType = .System
+    fileprivate var imageNameOrUrl: String?
+    fileprivate var buttonTitle: String?
+    fileprivate var imageType: XHGuideImageType = .system
     
-    public var index: Int = 0
-    public var buttonAction: (()->())?
-    public var tapAtIndex: ((index: Int)->())?
+    open var index: Int = 0
+    open var buttonAction: (()->())?
+    open var tapAtIndex: ((_ index: Int)->())?
     
     // imageView
-    public lazy var imageView: UIImageView = {
-        let newValue: UIImageView = UIImageView(frame: CGRectMake(self.leftMargin, self.topMargin, self.screenWidth, self.screenHeight))
-        newValue.backgroundColor = UIColor.clearColor()
-        newValue.contentMode = .ScaleAspectFill
+    open lazy var imageView: UIImageView = {
+        let newValue: UIImageView = UIImageView(frame: CGRect(x: self.leftMargin, y: self.topMargin, width: self.screenWidth, height: self.screenHeight))
+        newValue.backgroundColor = UIColor.clear
+        newValue.contentMode = .scaleAspectFill
         newValue.clipsToBounds = true
         return newValue
     }()
     // actionButton
-    public lazy var actionButton: UIButton = {
-        var newValue: UIButton = UIButton(frame: CGRectMake((self.screenWidth - self.buttonWidth)/2, self.screenHeight - 100 - self.buttonHeight, self.buttonWidth, self.buttonHeight))
-        newValue.setTitle("开始", forState: .Normal)
-        newValue.setTitleColor(UIColor.darkGrayColor(), forState: .Normal)
-        newValue.titleLabel?.font = UIFont.systemFontOfSize(12)
-        newValue.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
+    open lazy var actionButton: UIButton = {
+        var newValue: UIButton = UIButton(frame: CGRect(x: (self.screenWidth - self.buttonWidth)/2, y: self.screenHeight - 100 - self.buttonHeight, width: self.buttonWidth, height: self.buttonHeight))
+        newValue.setTitle("开始", for: UIControlState())
+        newValue.setTitleColor(UIColor.darkGray, for: UIControlState())
+        newValue.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        newValue.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         newValue.layer.cornerRadius = 5
         newValue.layer.masksToBounds = true
-        newValue.addTarget(self, action: #selector(XHGuideContentViewController.actionButtonClicked), forControlEvents: .TouchUpInside)
+        newValue.addTarget(self, action: #selector(XHGuideContentViewController.actionButtonClicked), for: .touchUpInside)
         return newValue
     }()
     
@@ -63,9 +63,8 @@ public class XHGuideContentViewController: UIViewController {
         self.imageType = imageType
     }
     
-    override public func viewDidLoad() {
-        UIScreen.mainScreen().bounds.width
-        self.view.backgroundColor = UIColor.clearColor()
+    override open func viewDidLoad() {
+        self.view.backgroundColor = UIColor.clear
         self.view.clipsToBounds = true
         let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(actionTapAt))
         self.view.addGestureRecognizer(tapGesture)
@@ -75,8 +74,8 @@ public class XHGuideContentViewController: UIViewController {
         self.loadImageView()
         
         if let buttonTitle = self.buttonTitle {
-            self.actionButton.setTitle(buttonTitle, forState: .Normal)
-            self.actionButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
+            self.actionButton.setTitle(buttonTitle, for: UIControlState())
+            self.actionButton.setTitleColor(UIColor.black, for: UIControlState())
             self.view.addSubview(self.actionButton)
         }
     }
@@ -84,60 +83,62 @@ public class XHGuideContentViewController: UIViewController {
     /**
      * 加载图片
      */
-    @objc private func loadImageView() {
+    @objc fileprivate func loadImageView() {
         if self.imageNameOrUrl != nil {
-            if self.imageType == .System {
+            if self.imageType == .system {
                 self.imageView.image = UIImage(named: self.imageNameOrUrl!)
             }
-            else if self.imageType == .Document {
+            else if self.imageType == .document {
                 weak var weakSelf = self
-                dispatch_async(dispatch_get_global_queue(0, 0), {
-                    let paths: [String] = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+                
+                DispatchQueue.global().async {
+                    let paths: [String] = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
                     var path: String = paths.first!
                     path = "\(path)/\(self.imageNameOrUrl!)"
-                    if NSFileManager.defaultManager().fileExistsAtPath(path) {
-                        let data:NSData? = NSData(contentsOfFile: path)
+                    if FileManager.default.fileExists(atPath: path) {
+                        let data:Data? = try? Data(contentsOf: URL(fileURLWithPath: path))
                         if let data = data {
                             let image: UIImage? = UIImage(data: data)
                             if image != nil {
-                                dispatch_async(dispatch_get_main_queue(), {
+                                DispatchQueue.main.async(execute: {
                                     weakSelf!.imageView.image = image
                                 })
                             }
                         }
                     }
-                })
+                }
             }
-            else if self.imageType == .Url {
+            else if self.imageType == .url {
                 weak var weakSelf = self
-                dispatch_async(dispatch_get_global_queue(0, 0), {
-                    var data: NSData!
+                
+                DispatchQueue.global().async {
+                    var data: Data!
                     if self.imageNameOrUrl?.hasPrefix("http://") == true || weakSelf!.imageNameOrUrl?.hasPrefix("https://") == true {
-                        let url: NSURL! = NSURL(string: weakSelf!.imageNameOrUrl!)
-                        data = NSData(contentsOfURL: url)
+                        let url: URL! = URL(string: weakSelf!.imageNameOrUrl!)
+                        data = try? Data(contentsOf: url)
                     }
                     if let data = data {
                         let image: UIImage? = UIImage(data: data)
                         if image != nil {
-                            dispatch_async(dispatch_get_main_queue(), {
+                            DispatchQueue.main.async(execute: {
                                 weakSelf!.imageView.image = image
                             })
                         }
                     }
-                })
+                }
             }
         }
     }
     
-    @objc private func actionButtonClicked(sender: UIButton) {
+    @objc fileprivate func actionButtonClicked(_ sender: UIButton) {
         if self.buttonAction != nil {
             self.buttonAction!()
         }
     }
     
-    @objc private func actionTapAt(sender: UITapGestureRecognizer) {
+    @objc fileprivate func actionTapAt(_ sender: UITapGestureRecognizer) {
         if self.tapAtIndex != nil {
-            self.tapAtIndex!(index: self.index)
+            self.tapAtIndex!(self.index)
         }
     }
 }
